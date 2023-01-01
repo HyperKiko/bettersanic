@@ -17,6 +17,13 @@ class ExceptionData(BetterSanicData):
         self.exceptions = exceptions
         self.kwargs = kwargs
 
+class ListenerData(BetterSanicData):
+    def __init__(self, event, *args, **kwargs):
+        self.type = "listener"
+        self.event = event
+        self.args = args
+        self.kwargs = kwargs
+
 
 class Cog:
     def __new__(cls, *args, **kwargs):
@@ -27,6 +34,8 @@ class Cog:
             route for route in bettersanic_funcs if route._bettersanic_data.type == "route"]
         new_cls.exceptions = [
             exception for exception in bettersanic_funcs if exception._bettersanic_data.type == "exception"]
+        new_cls.listeners = [
+            listener for listener in bettersanic_funcs if listener._bettersanic_data.type == "listener"]
 
         return new_cls
 
@@ -41,6 +50,9 @@ class BetterSanic(Sanic):
             for exception_type in data.exceptions:
                 self.error_handler.add(
                     exception_type, exception, **data.kwargs)
+        for listener in cog.listeners:
+            data = listener._bettersanic_data
+            self.register_listener(listener, data.event, *data.args, *data.kwargs)
 
     def load_extension(self, name):
         return importlib.import_module(name).setup(self)
@@ -56,5 +68,11 @@ def route(location, *args, **kwargs):
 def exception(*exceptions, **kwargs):
     def decorator(func):
         func._bettersanic_data = ExceptionData(*exceptions, **kwargs)
+        return func
+    return decorator
+
+def listener(event, *args, **kwargs):
+    def decorator(func):
+        func._bettersanic_data = ListenerData(event, *args, **kwargs)
         return func
     return decorator
