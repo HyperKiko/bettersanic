@@ -1,5 +1,4 @@
 import bettersanic as bs
-from sanic import response
 import asyncio
 
 class MainProcessStop(bs.Cog):
