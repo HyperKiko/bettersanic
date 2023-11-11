@@ -8,7 +8,7 @@ class NotFound(bs.Cog):
         self.app = app
     
     @bs.exception(exceptions.NotFound)
-    async def index(self, request: sanic.Request, exception: Exception):
+    async def index(self, request: sanic.Request, exception: BaseException):
         return response.text(f"The route \"{request.path}\" was not found.")
 
 def setup(app: bs.BetterSanic):

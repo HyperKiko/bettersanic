@@ -8,4 +8,4 @@ for cog in os.listdir("cogs"):
         app.load_extension(f"cogs.{cog[:-3]}")
 
 if __name__ == "__main__":
-    app.run()
+    app.run() # type: ignore # not my fault

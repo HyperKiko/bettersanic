@@ -1,7 +1,7 @@
 import bettersanic as bs
 import sanic
 
-class Index(bs.Cog):
+class OnRequest(bs.Cog):
     def __init__(self, app: bs.BetterSanic) -> None:
         self.app = app
     
@@ -10,4 +10,4 @@ class Index(bs.Cog):
         print("request middleware ran")
 
 def setup(app: bs.BetterSanic):
-    app.add_cog(Index(app))
+    app.add_cog(OnRequest(app))
