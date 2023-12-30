@@ -167,9 +167,8 @@ class BetterSanic(Sanic):
             )
         for exception_handler in cog.exceptions:
             data = exception_handler.bettersanic_data
-            for exception_handler in data.exceptions:
-                if isinstance(exception_handler, (tuple, list)):
-                    self.error_handler.add(exception_handler, exception_handler)  # type: ignore # not my fault
+            for exception in data.exceptions:
+                self.error_handler.add(exception, exception_handler)  # type: ignore # not my fault
         for listener_handler in cog.listeners:
             data = listener_handler.bettersanic_data
             self.register_listener(listener_handler, data.event)  # type: ignore # not my fault
