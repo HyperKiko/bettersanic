@@ -1,6 +1,16 @@
-from sanic import Sanic
+from sanic import Sanic, Config
 import importlib
-from typing import Iterable, Optional, Union, List, Any, Literal, Protocol, Callable
+from typing import (
+    Iterable,
+    Optional,
+    Union,
+    List,
+    Any,
+    Literal,
+    Protocol,
+    Callable,
+    TypeVar,
+)
 
 
 class BetterSanicData:
@@ -117,7 +127,7 @@ class Cog:
             for name, func in cls.__dict__.items()
             if callable(func)
             and hasattr(func, "bettersanic_data")
-            and isinstance(func.bettersanic_data, BetterSanicData)
+            and isinstance(func.bettersanic_data, BetterSanicData)  # type: ignore # not my fault
         ]
         new_cls.routes = [
             func
@@ -148,7 +158,11 @@ class Cog:
         return new_cls
 
 
-class BetterSanic(Sanic):
+ctx_type = TypeVar("ctx_type")
+config_type = TypeVar("config_type", bound=Config)
+
+
+class BetterSanic(Sanic[config_type, ctx_type]):
     def add_cog(self, cog: Cog):
         for route_handler in cog.routes:
             data = route_handler.bettersanic_data
@@ -174,7 +188,7 @@ class BetterSanic(Sanic):
             self.register_listener(listener_handler, data.event)  # type: ignore # not my fault
         for middleware_handler in cog.middlewares:
             data = middleware_handler.bettersanic_data
-            self.register_middleware(
+            self.register_middleware(  # type: ignore # not my fault
                 middleware_handler, data.attach_to  # type: ignore # not my fault
             )
         for websocket_handler in cog.websockets:
